@@ -41,12 +41,15 @@ type Time struct {
 }
 
 type parameter struct {
-	ParameterName string `json:"parameterName"`
+	ParameterName  string `json:"parameterName"`
 	ParameterValue string `json:"parameterValue"`
 }
 
 func (k msgServer) CreatePost(goCtx context.Context, msg *types.MsgCreatePost) (*types.MsgCreatePostResponse, error) {
+	loc, _ := time.LoadLocation("Asia/Taipei")
 	t := time.Now()
+	localTime := t.In(loc).Format("2006-01-02 15:04:05")
+
 	//hr := t.hour().String()
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	// Create variable of type Post
@@ -83,7 +86,7 @@ func (k msgServer) CreatePost(goCtx context.Context, msg *types.MsgCreatePost) (
 		Creator: msg.Creator,
 		Title:   msg.Title,
 		Body:    msg.Body,
-		Weather: a + t.String(),
+		Weather: a + localTime,
 	}
 
 	// Add a post to the store and get back the ID
