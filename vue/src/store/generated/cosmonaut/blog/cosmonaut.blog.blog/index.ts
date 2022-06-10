@@ -173,9 +173,9 @@ export default {
 		async sendMsgCreatePost({ rootGetters }, { value, fee = [], memo = '' }) {
 			try {
 				const txClient=await initTxClient(rootGetters)
+				console.log(value);
 				const msg = await txClient.msgCreatePost(value)
-				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, 
-	gas: "200000" }, memo})
+				const result = await txClient.signAndBroadcast([msg], {fee: { amount: fee, gas: "200000" }, memo})
 				return result
 			} catch (e) {
 				if (e == MissingWalletError) {
