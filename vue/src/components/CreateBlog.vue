@@ -1,5 +1,8 @@
 <template>
   <div class="tx">
+    <header class="assets-header">
+      <h2 class="title">Create Post</h2>
+    </header>
     <!-- feedbacks -->
     <div v-if="isTxOngoing" class="feedback">
     
@@ -127,9 +130,6 @@
       <div style="width: 100%; height: 32px" />
 
     <!-- send -->
-    <header class="assets-header">
-            <h2 class="title">Create Post</h2>
-    </header>
     <div v-if="showSend">
       <div class="enter-address-wrapper">
         <div class="input-label">Title</div>
