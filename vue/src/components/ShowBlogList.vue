@@ -7,7 +7,7 @@
           <SpButton :disabled="!address" @click="sendMsg(0, null)">Create Post</SpButton>
         </td>
         <td>
-          <SpButton @click="getAxios">Refresh</SpButton>
+          <SpButton @click="callApi">Refresh</SpButton>
         </td>
       </table>
     </div>
@@ -108,10 +108,12 @@ export default defineComponent({
     }
     getAxios()
 
-    onMounted(() => {
+    let callApi = (): void => {
+      console.log('hey')
       getAxios()
-    })
-    return { address, blogData }
+    }
+
+    return { address, blogData, callApi }
   },
   methods:{
     sendMsg(type, index){
@@ -121,9 +123,6 @@ export default defineComponent({
         this.$emit('sendmsg', this.blogData[index])
       }
     },
-    getAxios(){
-      
-    }
   },
 })
 </script>
