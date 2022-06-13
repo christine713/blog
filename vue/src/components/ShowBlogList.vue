@@ -76,10 +76,10 @@ export default defineComponent({
     // composables
     let { address } = useAddress({ $s })
 
-    let blogData = ref([])
+    const blogData = ref([])
 
     const getAxios = function(){
-      blogData = []
+      blogData.value = []
       axios.get(props.url)
       .then((res) => {
         console.log(res.data)
