@@ -1,17 +1,18 @@
 <template>
   <div class="container">
     <div class="row row-sm-revers">
-      <div class="col-md-8">
+      <div class="col-md-4">
         <ShowBlogList @sendmsg='getMsg'/>
+        <div style="width: 100%; height: 8px" />
       </div>
+      
       <div class="col-md-8">
-        -------------------------------------------------------------------------------------------------------------------------------------------------
-      </div>
-      <div class="col-md-8">
-        <ShowBlog :selectBlog='selectBlog'/>
-      </div>
-      <div class="row-md-8">
-        <CreateBlog />
+        <div v-if="info=='createPost'">
+          <CreateBlog />
+        </div>
+        <div v-else>
+          <ShowBlog :selectBlog='selectBlog'/>
+        </div>
       </div>
     </div>
   </div>
@@ -51,8 +52,12 @@ export default {
 
   methods: {
     getMsg(data){
-      this.info = data
-      this.selectBlog = data
+      if(data == 'createPost'){
+        this.info = "createPost"
+      }else{
+        this.info = "queryPost"
+        this.selectBlog = data
+      }
     },
   }
 

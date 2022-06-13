@@ -1,11 +1,16 @@
 <template>
-  <div class="title">[title]:{{ selectBlog.title }}</div>
+  <header class="post">Post</header>
+  <div style="width: 100%; height: 24px" />
+  <div class="title">{{ selectBlog.title }}</div>
+  <div style="width: 100%; height: 10px" />
   <table class="assets-table">
     <tbody v-if="selectBlog.body">
-      <tr>posted by: {{ selectBlog.creator }}</tr>
       <tr>created at: {{ selectBlog.createdAtDate }} {{ selectBlog.createdAtTime }}</tr>
       <tr>weather: {{ selectBlog.weather }}</tr>
+      <div style="width: 100%; height: 20px" />
       <tr class="assets-table__context">{{ selectBlog.body }}</tr>
+      <div style="width: 100%; height: 20px" />
+      <tr>posted by: {{ selectBlog.creator }}</tr>
       <tr v-if="!selectBlog" class="assets-table__row">
         <td class="assets-table__row--no-results">
           <p>Try again with another search</p>
@@ -21,6 +26,7 @@ import { BlogData } from './type/blog'
 
 export default defineComponent({
   name: 'ShowBlog',
+
   props: {
     selectBlog:{
       type: Object as PropType<BlogData>,
@@ -34,6 +40,7 @@ export default defineComponent({
   setup() {
   }
 })
+
 </script>
 
 <style lang="scss" scoped>
@@ -245,6 +252,18 @@ $avatar-offset: 32 + 16;
   font-feature-settings: 'zero';
   color: #000000;
   margin-top: 0;
+}
+
+.post {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 28px;
+  line-height: 127%;
+  /* identical to box height, or 36px */
+  letter-spacing: -0.016em;
+  font-feature-settings: 'zero';
+  color: rgb(2, 2, 2);
 }
 .input {
   &--search {

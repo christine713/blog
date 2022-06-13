@@ -1,13 +1,23 @@
 <template>
   <div class="tx-list">
     <div class="title">Blog List</div>
+    <div>
+      <table width="100%" style="table-layout:fixed">
+        <td>
+          <SpButton :disabled="!address" @click="sendMsg(0, null)">Create Post</SpButton>
+        </td>
+        <td>
+          <SpButton @click="getAxios">Refresh</SpButton>
+        </td>
+      </table>
+    </div>
     <table class="assets-table" v-bind="blogData">
       <tbody v-if="blogData">
         <tr
           v-for="(blog, index) in blogData"
           :key="index"
           class="assets-table__row"
-          @click="sendMsg(index)"
+          @click="sendMsg(1, index)"
         >
           <td>
             <tr>{{ blog.title }}</tr>
@@ -29,8 +39,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
+import { SpButton } from '@starport/vue'
 import axios from 'axios'
 
 import { useAddress } from '@starport/vue/src/composables'
@@ -39,7 +50,7 @@ import { BlogData } from './type/blog'
 export default defineComponent({
   name: 'ShowBlogList',
 
-  components: { },
+  components: { SpButton, },
 
   props: {
     url: {
@@ -95,14 +106,23 @@ export default defineComponent({
         throw new Error(error)
       })
     }
-
     getAxios()
 
+    onMounted(() => {
+      getAxios()
+    })
     return { address, blogData }
   },
   methods:{
-    sendMsg(index){
-      this.$emit('sendmsg',this.blogData[index])
+    sendMsg(type, index){
+      if(type == 0){
+        this.$emit('sendmsg', 'createPost')
+      }else{
+        this.$emit('sendmsg', this.blogData[index])
+      }
+    },
+    getAxios(){
+      
     }
   },
 })
