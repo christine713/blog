@@ -3,7 +3,9 @@
     <div class="row row-sm-revers">
       <div class="col-md-4">
         <ShowBlogList @sendmsg='getMsg'/>
+        <div style="width: 100%; height: 8px" />
       </div>
+      
       <div class="col-md-8">
         <div v-if="info=='createPost'">
           <CreateBlog />
@@ -60,4 +62,9 @@ export default {
   }
 
 }
+
+export interface State{
+  createPostOpen: boolean
+}
+
 </script>
