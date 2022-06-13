@@ -1,5 +1,5 @@
 <template>
-  <div class="title">[title]{{ selectBlog.title }}</div>
+  <div class="title">[title]:{{ selectBlog.title }}</div>
   <table class="assets-table">
     <tbody v-if="selectBlog.body">
       <tr>posted by: {{ selectBlog.creator }}</tr>

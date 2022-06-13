@@ -251,6 +251,7 @@ $avatar-offset: 32 + 16;
     text-align: right;
   }
   &__row {
+    cursor: pointer;
     &--no-results {
       text-align: center;
       padding-top: 32px;

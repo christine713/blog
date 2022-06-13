@@ -43,17 +43,6 @@
 
       <div style="width: 100%; height: 8px" />
 
-      <div
-        v-for="(x, i) in state.tx.amount"
-        :key="'amount' + i"
-        class="tx-feedback-subtitle amount"
-        :index="i"
-      >
-        {{ parseAmount(x.amount.amount) }} {{ x.amount.denom }}
-      </div>
-
-      <div style="width: 100%; height: 8px" />
-
       <div style="width: 100%">
         <SpButton style="width: 100%" @click="resetTx">Done</SpButton>
       </div>
@@ -326,15 +315,7 @@ export default defineComponent({
         resetTx()
       }
     )
-    watch(
-      () => balances.value.assets,
-      async (newValue, oldValue) => {
-        if (newValue.length > 0 && oldValue.length === 0) {
-          bootstrapTxAmount()
-        }
-      }
-    )
-
+    
     return {
       //state,
       state,
@@ -375,20 +356,8 @@ export default defineComponent({
 
   color: #000000;
 
-  &--disabled {
-    color: rgba(0, 0, 0, 0.33);
-    &:hover {
-      cursor: default !important;
-    }
-  }
 }
 
-.advanced-label:hover {
-  cursor: pointer;
-}
-.copy {
-  padding: 12px 0;
-}
 .feedback {
   display: flex;
   flex-direction: column;
@@ -396,44 +365,6 @@ export default defineComponent({
 }
 .tx {
   padding-bottom: 40px;
-}
-.token-selector {
-  &--main {
-    &::v-deep(.add-token) {
-      margin-top: 18px;
-    }
-  }
-}
-
-.advanced {
-  &::v-deep(.add-token) {
-    margin-top: 17px;
-  }
-}
-
-.qrcode-wrapper {
-  background: rgba(0, 0, 0, 0.03);
-  padding: 36px;
-  text-align: center;
-}
-
-.address-wrapper {
-  padding: 16px;
-}
-
-.receive-wrapper .address {
-  font-family: Inter;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 16px;
-  /* or 24px */
-
-  display: flex;
-  align-items: center;
-
-  word-break: break-all;
-
-  color: #000000;
 }
 
 .tx-feedback-title {
@@ -500,9 +431,6 @@ export default defineComponent({
   color: #000000;
 }
 
-.title-wrapper {
-  display: flex;
-}
 
 .input-label {
   font-family: Inter;

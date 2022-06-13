@@ -1,14 +1,17 @@
 <template>
   <div class="container">
     <div class="row row-sm-revers">
-      <div class="row-md-8">
-        <CreateBlog />
-      </div>
-      <div class="col-md-4">
+      <div class="col-md-8">
         <ShowBlogList @sendmsg='getMsg'/>
       </div>
       <div class="col-md-8">
+        -------------------------------------------------------------------------------------------------------------------------------------------------
+      </div>
+      <div class="col-md-8">
         <ShowBlog :selectBlog='selectBlog'/>
+      </div>
+      <div class="row-md-8">
+        <CreateBlog />
       </div>
     </div>
   </div>
@@ -54,4 +57,9 @@ export default {
   }
 
 }
+
+export interface State{
+  createPostOpen: boolean
+}
+
 </script>
