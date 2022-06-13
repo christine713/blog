@@ -372,7 +372,7 @@ export default {
 					throw new SpVuexError('TxClient:MsgSend:Send', 'Could not broadcast Tx: '+ e.message)
 				}
 			}
-		},
+		},	
 		
 		async MsgMultiSend({ rootGetters }, { value }) {
 			try {
