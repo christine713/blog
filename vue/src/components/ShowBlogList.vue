@@ -2,12 +2,12 @@
   <div class="tx-list">
     <div class="title">Blog List</div>
     <div>
-      <table width="100%" style="table-layout:fixed">
+      <table style="table-layout:fixed">
         <td>
-          <SpButton :disabled="!address" @click="sendMsg(0, null)">Create Post</SpButton>
+          <SpButton :disabled="!address" @click="sendMsg(0)">Create Post</SpButton>
         </td>
         <td>
-          <SpButton @click="getAxios">Refresh</SpButton>
+          <SpButton @click="callApi">Refresh</SpButton>
         </td>
       </table>
     </div>
@@ -50,7 +50,7 @@ import { BlogData } from './type/blog'
 export default defineComponent({
   name: 'ShowBlogList',
 
-  components: { SpButton, },
+  components: { SpButton },
 
   props: {
     url: {
@@ -79,23 +79,26 @@ export default defineComponent({
     const blogData = ref([])
 
     const getAxios = function(){
+      blogData.value = []
       axios.get(props.url)
       .then((res) => {
-        console.log(res.data)
         const blogRow = res.data
         if(blogRow.Post.length != 0){
-          for (let  x = 0; x < blogRow.Post.length; x++) {
-            let weather = res.data.Post[x].weather.split(" ")
+          for (let x = 0; x < blogRow.Post.length; x++) {
+            const strSplit = res.data.Post[x].weather.split(" ")
+            const weather = strSplit[0]
+            const createdAtDate = strSplit[1]
+            const createdAtTime = strSplit[2]
             
             const data: BlogData = {
-              creator: res.data.Post[x].creator,
-              shorCreator: res.data.Post[x].creator.substring(0, 10) + '...' + res.data.Post[x].creator.slice(-4),
-              id: res.data.Post[x].id,
-              title: res.data.Post[x].title,
-              body: res.data.Post[x].body,
-              weather: weather[0],
-              createdAtDate: weather[1],
-              createdAtTime: weather[2],
+              creator: blogRow.Post[x].creator,
+              shorCreator: blogRow.Post[x].creator.substring(0, 10) + '...' + blogRow.Post[x].creator.slice(-4),
+              id: blogRow.Post[x].id,
+              title: blogRow.Post[x].title,
+              body: blogRow.Post[x].body,
+              weather,
+              createdAtDate,
+              createdAtTime,
             }
 
             blogData.value.push(data)
@@ -106,23 +109,22 @@ export default defineComponent({
         throw new Error(error)
       })
     }
+
     getAxios()
 
-    onMounted(() => {
+    let callApi = (): void => {
       getAxios()
-    })
-    return { address, blogData }
+    }
+
+    return { address, blogData, callApi }
   },
   methods:{
-    sendMsg(type, index){
+    sendMsg(type, index = 0){
       if(type == 0){
         this.$emit('sendmsg', 'createPost')
       }else{
         this.$emit('sendmsg', this.blogData[index])
       }
-    },
-    getAxios(){
-      
     }
   },
 })
@@ -181,24 +183,6 @@ $avatar-offset: 32 + 16;
           display: none;
           -webkit-appearance: none;
         }
-      }
-      .search-icon {
-        position: absolute;
-        left: 14px;
-        top: 18px;
-      }
-      .clear-icon {
-        position: absolute;
-        height: 48px;
-        right: 13px;
-        width: 24px;
-        top: 1px;
-        display: flex;
-        cursor: pointer;
-        align-items: center;
-        z-index: 456;
-        justify-content: center;
-        background: #fff;
       }
     }
   }
@@ -293,34 +277,6 @@ $avatar-offset: 32 + 16;
     }
   }
 }
-.sp-denom-name {
-  display: inline-block;
-  font-family: Inter, serif;
-  font-size: 16px;
-  letter-spacing: -0.112px;
-  line-height: 21px;
-  tab-size: 4;
-  text-align: right;
-  text-indent: 0;
-  vertical-align: middle;
-  font-weight: 600;
-}
-.sp-denom-marker {
-  display: inline-flex;
-  vertical-align: middle;
-  margin-right: 16px;
-  border-radius: 24px;
-  text-align: center;
-  font-family: Inter, serif;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 16px;
-  line-height: 125%;
-  /* or 20px */
-  align-items: center;
-  justify-content: center;
-  letter-spacing: -0.007em;
-}
 .title {
   font-family: Inter, serif;
   font-style: normal;
@@ -332,43 +288,6 @@ $avatar-offset: 32 + 16;
   font-feature-settings: 'zero';
   color: #000000;
   margin-top: 0;
-}
-.input {
-  &--search {
-    background-image: none;
-    border-radius: 4px;
-    border: rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
-    color: rgba(0, 0, 0, 0.33);
-    display: inline-block;
-    font-size: 16px;
-    height: 40px;
-    line-height: 40px;
-    outline: none;
-    padding: 0 15px;
-    transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    width: 100%;
-  }
-}
-.show-more {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 16px;
-  width: 124px;
-  height: 36px;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: #ffffff;
-  box-shadow: 3px 9px 32px -4px rgba(0, 0, 0, 0.07);
-  border-radius: 56px;
-  color: #000000;
-  font-weight: 500;
-  font-size: 13px;
-  position: absolute;
-  cursor: pointer;
-  margin: 0 auto;
 }
 .no-result-label {
   font-size: 16px;
@@ -485,8 +404,5 @@ section {
   100% {
     background-position: 140px;
   }
-}
-.arrow-icon {
-  margin-left: 9px;
 }
 </style>

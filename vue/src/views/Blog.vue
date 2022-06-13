@@ -6,7 +6,7 @@
       </div>
       <div class="col-md-8">
         <div v-if="info=='createPost'">
-          <CreateBlog />
+          <CreateBlog @refresh='getRefresh'/>
         </div>
         <div v-else>
           <ShowBlog :selectBlog='selectBlog'/>
@@ -19,6 +19,7 @@
 <script lang='ts'>
 import { computed } from 'vue'
 import { useStore } from 'vuex'
+
 import CreateBlog from '../components/CreateBlog.vue'
 import ShowBlog from '../components/ShowBlog.vue'
 import ShowBlogList from '../components/ShowBlogList.vue'
@@ -27,7 +28,7 @@ export default {
   name: 'Blog',
 
   components: { ShowBlog, ShowBlogList, CreateBlog },
-  
+
   data() {
     return {
       data: 'hello',
@@ -49,13 +50,16 @@ export default {
   },
 
   methods: {
-    getMsg(data){
+    getMsg(data) {
       if(data == 'createPost'){
         this.info = "createPost"
       }else{
         this.info = "queryPost"
         this.selectBlog = data
       }
+    },
+    getRefresh(data) {
+      this.info = data
     },
   }
 
