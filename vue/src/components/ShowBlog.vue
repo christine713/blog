@@ -1,28 +1,37 @@
 <template>
-  <section>
-    <header class="assets-header">
-      <h2 class="title">title</h2>
-      <!-- <h2 class="title">{{ title }}</h2> -->
-    </header>
-    <main>
-      <!-- <span>posted by: {{ creator }}</span>
-      <span>time: {{ time }}</span>
-      <span>weather: {{ weather }}</span>
-      <span>posted by: {{ body }}</span> -->
-    </main>
-    
-  </section>
+  <div class="title">[title]{{ selectBlog.title }}</div>
+  <table class="assets-table">
+    <tbody v-if="selectBlog.body">
+      <tr>posted by: {{ selectBlog.creator }}</tr>
+      <tr>created at: {{ selectBlog.createdAtDate }} {{ selectBlog.createdAtTime }}</tr>
+      <tr>weather: {{ selectBlog.weather }}</tr>
+      <tr class="assets-table__context">{{ selectBlog.body }}</tr>
+      <tr v-if="!selectBlog" class="assets-table__row">
+        <td class="assets-table__row--no-results">
+          <p>Try again with another search</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
+import { BlogData } from './type/blog'
+
 export default defineComponent({
   name: 'ShowBlog',
   props: {
-
+    selectBlog:{
+      type: Object as PropType<BlogData>,
+      default: []
+    }
+  },
+  data() {
+    return {
+    }
   },
   setup() {
-    
   }
 })
 </script>
@@ -104,6 +113,10 @@ $avatar-offset: 32 + 16;
 }
 .assets-table {
   width: 100%;
+  &__context {
+    font-size: 19px;
+    color: #000;
+  }
   &__denom {
     border-top-left-radius: 0.75rem;
     border-bottom-left-radius: 0.75rem;
@@ -388,5 +401,11 @@ section {
 }
 .arrow-icon {
   margin-left: 9px;
+}
+.hr-style {
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.3);
 }
 </style>

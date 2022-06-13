@@ -86,7 +86,7 @@ func (k msgServer) CreatePost(goCtx context.Context, msg *types.MsgCreatePost) (
 		Creator: msg.Creator,
 		Title:   msg.Title,
 		Body:    msg.Body,
-		Weather: a + localTime,
+		Weather: a + " " + localTime,
 	}
 
 	// Add a post to the store and get back the ID

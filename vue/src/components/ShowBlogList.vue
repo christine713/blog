@@ -1,69 +1,110 @@
 <template>
-  <section>
-    <header class="assets-header">
-      <h2 class="title">Assets</h2>
-    </header>
-    <!-- <table class="assets-table">
-      <thead v-if="balances.assets.length" class="assets-table__thead">
-        <tr>
-          <td>Date</td>
-          <td>Title</td>
-          <td class="assets-table__align-right">Posted by</td>
-        </tr>
-      </thead>
-      <tbody>
+  <div class="tx-list">
+    <div class="title">Blog List</div>
+    <table class="assets-table" v-bind="blogData">
+      <tbody v-if="blogData">
         <tr
-          v-for="(balance, index) in filteredBalanceList.slice(0, displayLimit)"
+          v-for="(blog, index) in blogData"
           :key="index"
           class="assets-table__row"
+          @click="sendMsg(index)"
         >
-          <td class="assets-table__denom">
-            <div class="sp-denom-marker">
-              <h3>hello22</h3>
-            </div>
-            <div class="sp-denom-name">
-              <h3>hello25</h3>
-            </div>
+          <td>
+            <tr>{{ blog.title }}</tr>
+            <tr>{{ blog.shorCreator }}</tr>
           </td>
-          <td
-            :class="[
-              typeof balance.path === 'object'
-                ? 'assets-table__channels--object'
-                : null,
-              'assets-table__channels'
-            ]"
-          >
-            <ul v-if="balance.path">
-              <li>Channels</li>
-              <li v-for="(channel, $index) in balance.path" :key="$index">
-                <div>
-                  {{ channel }}
-                </div>
-              </li>
-            </ul>
-          </td>
-          <td class="assets-table__amount">
-            {{ new Intl.NumberFormat('en-GB').format(balance.amount.amount) }}
+          <td >
+            <tr>{{ blog.createdAtDate }}</tr>
+            <tr>{{ blog.createdAtTime }}</tr>
           </td>
         </tr>
-        <tr class="assets-table__row">
-          <td class="assets-table__row--no-results" colspan="3">
-            <h4>No results for '{{ searchQuery }}'</h4>
+        <tr v-if="!blogData.length" class="assets-table__row">
+          <td class="assets-table__row--no-results">
             <p>Try again with another search</p>
           </td>
         </tr>
       </tbody>
-    </table> -->
-  </section>
+    </table>
+  </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, nextTick, ref, toRefs } from 'vue'
+import { defineComponent, ref } from 'vue'
+import { useStore } from 'vuex'
+import axios from 'axios'
+
+import { useAddress } from '@starport/vue/src/composables'
+import { BlogData } from './type/blog'
+
 export default defineComponent({
   name: 'ShowBlogList',
-  setup() {
-    
-  }
+
+  components: { },
+
+  props: {
+    url: {
+      type: String,
+      default: 'http://localhost:1317/cosmonaut/blog/blog/posts'
+    },
+    data:{
+      type: String,
+      default: 'default'
+    },
+  },
+
+  data() {
+    return {
+      activeName: 1,
+      blogData: [],
+    }
+  },
+  
+  setup(props) {
+    let $s = useStore()
+
+    // composables
+    let { address } = useAddress({ $s })
+
+    const blogData = ref([])
+
+    const getAxios = function(){
+      axios.get(props.url)
+      .then((res) => {
+        console.log(res.data)
+        const blogRow = res.data
+        if(blogRow.Post.length != 0){
+          for (let  x = 0; x < blogRow.Post.length; x++) {
+            let weather = res.data.Post[x].weather.split(" ")
+            
+            const data: BlogData = {
+              creator: res.data.Post[x].creator,
+              shorCreator: res.data.Post[x].creator.substring(0, 10) + '...' + res.data.Post[x].creator.slice(-4),
+              id: res.data.Post[x].id,
+              title: res.data.Post[x].title,
+              body: res.data.Post[x].body,
+              weather: weather[0],
+              createdAtDate: weather[1],
+              createdAtTime: weather[2],
+            }
+
+            blogData.value.push(data)
+          }
+        }
+      })
+      .catch((error) => {
+        throw new Error(error)
+      })
+    }
+
+    getAxios()
+
+    return { address, blogData }
+  },
+  methods:{
+    sendMsg(index){
+      this.$emit('sendmsg',this.blogData[index])
+    }
+  },
 })
 </script>
 
@@ -148,8 +189,7 @@ $avatar-offset: 32 + 16;
     border-top-left-radius: 0.75rem;
     border-bottom-left-radius: 0.75rem;
     vertical-align: middle;
-    padding-top: 1.25rem;
-    padding-bottom: 1.25rem;
+    padding-top: 2.5rem;
     width: 35.4%;
   }
   &__amount {
