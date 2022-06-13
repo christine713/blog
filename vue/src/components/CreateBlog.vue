@@ -39,7 +39,7 @@
 
       <div style="width: 100%; height: 24px" />
 
-      <div class="tx-feedback-title">Assets transferred</div>
+      <div class="tx-feedback-title">Post created</div>
 
       <div style="width: 100%; height: 8px" />
 
