@@ -1,17 +1,21 @@
 <template>
-  <div class="title">{{ selectBlog.title }}</div>
   <table class="assets-table">
-    <tbody v-if="selectBlog.body">
-      <tr>posted by: {{ selectBlog.creator }}</tr>
-      <tr>created at: {{ selectBlog.createdAtDate }} {{ selectBlog.createdAtTime }}</tr>
-      <tr>weather: {{ selectBlog.weather }}</tr>
-      <tr class="assets-table__context">{{ selectBlog.body }}</tr>
-      <tr v-if="!selectBlog" class="assets-table__row">
+    <div v-if="selectBlog.body">
+      <tbody>
+        <div class="title">{{ selectBlog.title }}</div>
+        <tr>posted by: {{ selectBlog.creator }}</tr>
+        <tr>created at: {{ selectBlog.createdAtDate }} {{ selectBlog.createdAtTime }}</tr>
+        <tr>weather: {{ selectBlog.weather }}</tr>
+        <tr class="assets-table__context">{{ selectBlog.body }}</tr>
+      </tbody>
+    </div>
+    <div v-else>
+      <tr class="assets-table__row">
         <td class="assets-table__row--no-results">
           <p>Try again with another search</p>
         </td>
       </tr>
-    </tbody>
+    </div>
   </table>
 </template>
 
