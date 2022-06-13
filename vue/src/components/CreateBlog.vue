@@ -127,11 +127,11 @@
       <div style="width: 100%; height: 32px" />
 
     <!-- send -->
-    <header class="assets-header">
+    <header class="advanced-label">
             <h2 class="title">Create Post</h2>
     </header>
     <div v-if="showSend">
-      <div class="enter-address-wrapper">
+      <div class="enter-text-wrapper">
         <div class="input-label">Title</div>
 
         <div class="input-wrapper">
@@ -144,7 +144,7 @@
         </div>
       </div>
 
-      <div class="enter-address-wrapper">
+      <div class="enter-text-wrapper">
         <div class="input-label">Body</div>
 
         <div class="input-wrapper">
@@ -159,17 +159,8 @@
 
       
 
-      <div style="width: 100%; height: 21px" />
       
-        <SpAmountSelect
-          class="token-selector--main"
-          :selected="state.tx.amount"
-          :balances="balances.assets"
-          @update="handleTxAmountUpdate"
-        />
-        <div style="width: 100%; height: 34px" />
-
-      <div style="width: 100%; height: 24px" />
+      <div style="width: 100%; height: 54px" />
 
       <div>
         <SpButton style="width: 100%"  @click="sendTx"
@@ -198,10 +189,6 @@ export interface TxData {
 [x: string]: string
   title: string
   body: string
-  ch: string
-  amount: Array<AssetForUI>
-  memo: string
-  fees: Array<AssetForUI>
 }
 
 export enum UI_STATE {
@@ -230,11 +217,7 @@ export interface State {
 export let initialState: State = {
   tx: {
     title:'',
-    body:'',
-    ch: '',
-    amount: [],
-    memo: '',
-    fees: []
+    body:''
   },
   currentUIState: UI_STATE.SEND,
   advancedOpen: false
@@ -272,40 +255,18 @@ export default defineComponent({
     let switchToSend = (): void => {
       state.currentUIState = UI_STATE.SEND
     }
-    let switchToReceive = (): void => {
-      if (address.value) {
-        state.currentUIState = UI_STATE.RECEIVE
-      }
-    }
     let parseAmount = (amount: string): number => {
       return amount == '' ? 0 : parseInt(amount)
     }
     let resetTx = (): void => {
-      state.tx.amount = []
       state.tx.title = ''
       state.tx.body = ''
-      state.tx.memo = ''
-      state.tx.ch = ''
-      state.tx.fees = []
 
       state.currentUIState = UI_STATE.SEND
     }
     let sendTx = async (): Promise<void> => {
       state.currentUIState = UI_STATE.TX_SIGNING
 
-      let fee: Array<Amount> = state.tx.fees.map((x: AssetForUI) => ({
-        denom: x.amount.denom,
-        amount: x.amount.amount == '' ? '0' : x.amount.amount
-      }))
-
-      let amount: Array<Amount> = state.tx.amount.map((x: AssetForUI) => ({
-        denom: x.amount.denom,
-        amount: x.amount.amount == '' ? '0' : x.amount.amount
-      }))
-
-      let memo = state.tx.memo
-
-      let isIBC = state.tx.ch !== ''
 
       let send
 
@@ -316,35 +277,12 @@ export default defineComponent({
       }
 
       try {
-        if (isIBC) {
-          payload = {
-            ...payload,
-            sourcePort: 'transfer',
-            sourceChannel: state.tx.ch,
-            sender: address.value,
-            receiver: state.tx.title,
-            timeoutHeight: 0,
-            timeoutTimestamp: long
-              .fromNumber(new Date().getTime() + 60000)
-              .multiply(1000000),
-            token: state.tx.amount[0]
-          }
-
-          send = () =>
-            sendMsgTransfer({
-              value: payload,
-              fee,
-              memo
-            })
-        } else {
+        
           send = () =>
             sendMsgSend({
-              value: payload,
-              fee,
-              memo
+              value: payload
             })
-        }
-
+        
         const txResult = await send()
 
         if (txResult.code) {
@@ -356,35 +294,11 @@ export default defineComponent({
         state.currentUIState = UI_STATE.TX_ERROR
       }
     }
-    let resetFees = (): void => {
-      state.tx.fees = []
-    }
-    let handleTxAmountUpdate = ({ selected }) => {
-      state.tx.amount = selected
-    }
-    let handleTxFeesUpdate = ({ selected }) => {
-      state.tx.fees = selected
-    }
-    let bootstrapTxAmount = () => {
-      if (hasAnyBalance.value) {
-        let firstBalance: AssetForUI = balances.value.assets[0]
-
-        state.tx.amount[0] = {
-          ...firstBalance,
-          amount: {
-            amount: '',
-            denom: firstBalance.amount.denom
-          }
-        }
-      }
-    }
+    
 
     // computed
     let showSend = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.SEND
-    })
-    let showReceive = computed<boolean>(() => {
-      return state.currentUIState === UI_STATE.RECEIVE
     })
     let showWalletLocked = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.WALLET_LOCKED
@@ -403,40 +317,7 @@ export default defineComponent({
     let isTxError = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.TX_ERROR
     })
-    let validTxFees = computed<boolean>(() =>
-      state.tx.fees.every((x) => {
-        let parsedAmount = parseAmount(x.amount.amount)
-
-        return !isNaN(parsedAmount) && parsedAmount > 0
-      })
-    )
-    let validTxAmount = computed<boolean>(
-      () =>
-        state.tx.amount.length > 0 &&
-        state.tx.amount.every((x) => {
-          let parsedAmount = parseAmount(x.amount.amount)
-
-          return !isNaN(parsedAmount) && parsedAmount > 0
-        })
-    )
-    let validToAddress = computed<boolean>(() => {
-      let valid: boolean
-
-      try {
-        valid = !!Bech32.decode(state.tx.title)
-      } catch {
-        valid = false
-      }
-
-      return valid
-    })
-    let ableToTx = computed<boolean>(
-      () =>
-        validTxAmount.value &&
-        validToAddress.value &&
-        validTxFees.value &&
-        !!address.value
-    )
+    
 
     //watch
     watch(
@@ -461,24 +342,17 @@ export default defineComponent({
       address,
       // computed
       showSend,
-      showReceive,
       showWalletLocked,
       balances,
       hasAnyBalance,
       isTxOngoing,
       isTxSuccess,
       isTxError,
-      ableToTx,
-      validToAddress,
       // methods
       switchToSend,
-      switchToReceive,
       parseAmount,
       resetTx,
       sendTx,
-      resetFees,
-      handleTxAmountUpdate,
-      handleTxFeesUpdate
     }
   }
 })
@@ -675,7 +549,7 @@ export default defineComponent({
   cursor: pointer;
 }
 
-.enter-address-wrapper {
+.enter-text-wrapper {
   display: flex;
   flex-direction: column;
   flex: 1;
