@@ -124,36 +124,43 @@
       <div class="wallet-locked-wrapper">unlock your wallet</div>
     </div>
 
-    
-
       <div style="width: 100%; height: 32px" />
 
     <!-- send -->
+    <header class="assets-header">
+            <h2 class="title">Create Post</h2>
+    </header>
     <div v-if="showSend">
       <div class="enter-address-wrapper">
-        <div class="input-label">Send to</div>
+        <div class="input-label">Title</div>
 
         <div class="input-wrapper">
           <input
-            v-model="state.tx.toAddress"
+            v-model="state.tx.title"
             class="input"
-            :class="{
-              error: state.tx.toAddress.length > 0 && !validToAddress
-            }"
-            placeholder="Recipient address"
-            :disabled="!hasAnyBalance"
+            placeholder="input blog title"
           />
-          <div
-            v-if="state.tx.toAddress.length > 0 && !validToAddress"
-            class="error-message"
-          >
-            Invalid address
-          </div>
+          
         </div>
       </div>
 
+      <div class="enter-address-wrapper">
+        <div class="input-label">Body</div>
+
+        <div class="input-wrapper">
+          <input
+            v-model="state.tx.body"
+            class="input"
+            placeholder="input blog body"
+          />
+          
+        </div>
+      </div>
+
+      
+
       <div style="width: 100%; height: 21px" />
-      <div v-if="hasAnyBalance">
+      
         <SpAmountSelect
           class="token-selector--main"
           :selected="state.tx.amount"
@@ -161,88 +168,6 @@
           @update="handleTxAmountUpdate"
         />
         <div style="width: 100%; height: 34px" />
-      </div>
-
-      <div
-        :class="[
-          'advanced-label',
-          { 'advanced-label--disabled': !hasAnyBalance }
-        ]"
-        @click="hasAnyBalance && (state.advancedOpen = !state.advancedOpen)"
-      >
-        Advanced
-        <template v-if="hasAnyBalance">
-          <svg
-            v-if="!state.advancedOpen"
-            width="12"
-            height="8"
-            viewBox="0 0 12 8"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            style="margin-left: 7px"
-          >
-            <path
-              d="M5.99998 7.4L0.599976 2L1.99998 0.599998L5.99998 4.6L9.99998 0.599998L11.4 2L5.99998 7.4Z"
-              fill="black"
-            />
-          </svg>
-          <svg
-            v-else
-            width="12"
-            height="8"
-            viewBox="0 0 12 8"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            style="margin-left: 7px"
-          >
-            <path
-              d="M10.0001 7.4001L6.0001 3.4001L2.0001 7.4001L0.600098 6.0001L6.0001 0.600098L11.4001 6.0001L10.0001 7.4001Z"
-              fill="black"
-            />
-          </svg>
-        </template>
-      </div>
-
-      <div
-        v-if="state.advancedOpen && hasAnyBalance"
-        style="width: 100%; height: 24px"
-      />
-
-      <div v-if="state.advancedOpen && hasAnyBalance" class="advanced">
-        <div class="input-label">Fees</div>
-
-        <div style="width: 100%; height: 14px" />
-        <SpAmountSelect
-          class="token-selector"
-          :selected="state.tx.fees"
-          :balances="balances.assets"
-          @update="handleTxFeesUpdate"
-        />
-
-        <div style="width: 100%; height: 35px" />
-
-        <div class="input-label">Reference (memo)</div>
-
-        <div class="input-wrapper">
-          <input
-            v-model="state.tx.memo"
-            class="input"
-            placeholder="Enter a reference"
-          />
-        </div>
-
-        <div style="width: 100%; height: 16px" />
-
-        <div class="input-label">Channel</div>
-
-        <div class="input-wrapper">
-          <input
-            v-model="state.tx.ch"
-            class="input"
-            placeholder="Enter a channel"
-          />
-        </div>
-      </div>
 
       <div style="width: 100%; height: 24px" />
 
@@ -256,35 +181,6 @@
   </div>
 </template>
 
-<!--
-<template>
-    <section>
-        <header class="assets-header">
-            <h2 class="title">Create Post</h2>
-        </header>
-        <div style="width: 100%; height: 32px" />
-        <div class="enter-address-wrapper">
-          <div class="input-label">create your new post</div>
-          <div class="input-wrapper">
-            <input class="input" v-model="title"
-            placeholder="title" />
-            
-          </div>
-          
-          <div class="input-wrapper">
-            <input class="input" v-model="post"
-            placeholder="write your blog" />
-            
-          </div>
-         
-          <SpButton style="width: 100%" @click="sendTx" >Post</SpButton>
-
-        </div>
-
-    </section>
-
-</template>
--->
 
 <script lang="ts">
 
@@ -299,7 +195,9 @@ import { useAddress, useAssets } from '@starport/vue/src/composables'
 
 // types
 export interface TxData {
-  toAddress: string
+[x: string]: string
+  title: string
+  body: string
   ch: string
   amount: Array<AssetForUI>
   memo: string
@@ -331,7 +229,8 @@ export interface State {
 
 export let initialState: State = {
   tx: {
-    toAddress: '',
+    title:'',
+    body:'',
     ch: '',
     amount: [],
     memo: '',
@@ -383,7 +282,8 @@ export default defineComponent({
     }
     let resetTx = (): void => {
       state.tx.amount = []
-      state.tx.toAddress = ''
+      state.tx.title = ''
+      state.tx.body = ''
       state.tx.memo = ''
       state.tx.ch = ''
       state.tx.fees = []
@@ -411,8 +311,8 @@ export default defineComponent({
 
       let payload: any = {
         creator: address.value,
-        title:'hello',
-        body:'world2'
+        title:state.tx.title,
+        body:state.tx.body
       }
 
       try {
@@ -422,7 +322,7 @@ export default defineComponent({
             sourcePort: 'transfer',
             sourceChannel: state.tx.ch,
             sender: address.value,
-            receiver: state.tx.toAddress,
+            receiver: state.tx.title,
             timeoutHeight: 0,
             timeoutTimestamp: long
               .fromNumber(new Date().getTime() + 60000)
@@ -523,7 +423,7 @@ export default defineComponent({
       let valid: boolean
 
       try {
-        valid = !!Bech32.decode(state.tx.toAddress)
+        valid = !!Bech32.decode(state.tx.title)
       } catch {
         valid = false
       }
@@ -583,70 +483,6 @@ export default defineComponent({
   }
 })
 
-
-
-/*createpost
-import { computed, defineComponent, nextTick, ref, toRefs, reactive } from 'vue'
-import { SpButton } from '@starport/vue'
-import long from 'long'
-import { AssetForUI,Amount} from '@starport/vuex'
-import { useStore } from 'vuex'
-export interface TxData {
-  Creator: string
-  title: string
-  body: string
-}
-
-export let initialState: State = {
-  tx: {
-    Creator: '',
-    title: '',
-    body: ''
-  },
-  currentUIState: UI_STATE.SEND,
-  advancedOpen: false
-}
-
-export default defineComponent({
-  name: 'CreateBlog',
-  components: { SpButton },
-  setup() {
-    // store
-    let $s = useStore()
-    let address = computed(() => $s.getters['common/wallet/address'])
-    
-
-    let payload: any = {
-
-        Creator: address.value,
-        title:'hello',
-        body: 'world'
-    }
-    let sendMsgCreatePost = (opts: any) =>
-    $s.dispatch('cosmonaut.blog.blog/sendMsgCreatePost', opts)
-    let sendTx = async (): Promise<void> => {
-      let send
-      
-      send = () =>
-            console.log(payload)
-            
-            sendMsgCreatePost({
-              value: payload,
-              fee:[20000],
-              memo:''
-            })
-      const txResult = await send()
-      
-         
-    }
-  return{
-    sendTx
-  }
-  
-    
-  }
-})
-*/
 </script>
 
 <style scoped lang="scss">
@@ -818,7 +654,7 @@ export default defineComponent({
   letter-spacing: -0.016em;
   font-feature-settings: 'zero';
 
-  color: rgba(0, 0, 0, 0.33);
+  color: rgb(2, 2, 2);
 
   &.disabled {
     &:hover {
@@ -896,96 +732,3 @@ export default defineComponent({
   display: block;
 }
 </style>
-
-<!--
-<style scoped lang="scss">
-.title {
-  font-family: Inter;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 28px;
-  line-height: 127%;
-  /* identical to box height, or 36px */
-
-  letter-spacing: -0.016em;
-  font-feature-settings: 'zero';
-  color: #000000;
-
-  &.disabled {
-    &:hover {
-      cursor: text;
-    }
-  }
-}
-
-.input-label {
-  font-family: Inter;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 153.8%;
-  /* identical to box height, or 20px */
-
-  /* light/muted */
-
-  color: rgba(0, 0, 0, 0.667);
-}
-.enter-address-wrapper {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.input {
-  margin-top: 4px;
-  padding: 12px 16px;
-  height: 48px;
-  background-color: rgba(0, 0, 0, 0.03);
-  border-radius: 10px;
-  font-family: Inter;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 16px;
-  line-height: 130%;
-  color: #000000;
-  width: 100%;
-  outline: 0;
-  transition: background-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-  display: block;
-
-  &:not([disabled]) {
-    &:hover {
-      background: rgba(0, 0, 0, 0.07);
-    }
-  }
-
-  &:focus {
-    background: rgba(0, 0, 0, 0.07);
-    color: #000;
-  }
-
-  &.error {
-    box-shadow: 0 0 0 1px rgba(254, 71, 95, 1);
-  }
-}
-
-.error-message {
-  font-family: Inter;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 13px;
-  line-height: 153.8%;
-  color: #d80228;
-  margin-top: 5px;
-}
-
-.input::placeholder {
-  color: rgba(0, 0, 0, 0.33);
-}
-
-.input-wrapper {
-  display: block;
-}
-
-</style>
--->
