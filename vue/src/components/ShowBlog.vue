@@ -25,16 +25,14 @@ import { BlogData } from './type/blog'
 
 export default defineComponent({
   name: 'ShowBlog',
+
   props: {
     selectBlog:{
       type: Object as PropType<BlogData>,
       default: []
     }
   },
-  data() {
-    return {
-    }
-  },
+
   setup() {
   }
 })

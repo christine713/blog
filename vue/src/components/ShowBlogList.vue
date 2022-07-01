@@ -3,30 +3,28 @@
     <div class="title">Blog List</div>
     <div>
       <table width="100%" style="table-layout:fixed">
-        <td>
-          <SpButton :disabled="!address" @click="sendMsg(0, null)">Create Post</SpButton>
-        </td>
-        <td>
-          <SpButton @click="callApi">Refresh</SpButton>
+        <td class="assets-table">
+          <SpButton :disabled="!address" @click="sendCreatePost">Create Post</SpButton>
         </td>
       </table>
     </div>
-    <table class="assets-table" v-bind="blogData">
+    <table class="assets-table">
       <tbody v-if="blogData">
         <tr
-          v-for="(blog, index) in blogData"
-          :key="index"
-          class="assets-table__row"
-          @click="sendMsg(1, index)"
+          v-for="(blog, index) in blogData" class="assets-table__row"
+          @click="sendShowBlog(index)"
         >
-          <td>
-            <tr>{{ blog.title }}</tr>
-            <tr>{{ blog.shorCreator }}</tr>
-          </td>
-          <td >
-            <tr>{{ blog.createdAtDate }}</tr>
-            <tr>{{ blog.createdAtTime }}</tr>
-          </td>
+          <tr>
+            <td>
+              <tr>{{ blog.title }}</tr>
+              <tr>{{ blog.shorCreator }}</tr>
+            </td>
+            <td >
+              <tr>{{ blog.createdAtDate }}</tr>
+              <tr>{{ blog.createdAtTime }}</tr>
+            </td>
+          </tr>
+          <div class="bottom-divider"></div>
         </tr>
         <tr v-if="!blogData.length" class="assets-table__row">
           <td class="assets-table__row--no-results">
@@ -39,9 +37,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, ref, toRef, watch } from 'vue'
 import { useStore } from 'vuex'
 import { SpButton } from '@starport/vue'
+
 import axios from 'axios'
 
 import { useAddress } from '@starport/vue/src/composables'
@@ -50,79 +49,92 @@ import { BlogData } from './type/blog'
 export default defineComponent({
   name: 'ShowBlogList',
 
-  components: { SpButton, },
+  components: { SpButton },
 
   props: {
     url: {
       type: String,
-      default: 'http://localhost:1317/cosmonaut/blog/blog/posts'
+      default: 'http://localhost:1317/cosmonaut/blog/blog/posts',
     },
-    data:{
+    data: {
       type: String,
-      default: 'default'
+      default: 'default',
     },
-  },
-
-  data() {
-    return {
-      activeName: 1,
-      blogData: [],
-    }
+    refreshReq:{
+      type: Number,
+      default: 0,
+    },
   },
   
-  setup(props) {
+  setup(props, {emit}) {
     let $s = useStore()
 
     // composables
     let { address } = useAddress({ $s })
 
-    let blogData = ref([])
+    // data
+    const blogData = ref([] as BlogData[])
+    const refreshReq = toRef(props, 'refreshReq')
 
-    const getAxios = function(){
-      blogData = []
+    // method
+    let getBlogData = (): void => {
+      blogData.value = []
+      
       axios.get(props.url)
       .then((res) => {
-        console.log(res.data)
-        const blogRow = res.data
-        if(blogRow.Post.length != 0){
-          for (let  x = 0; x < blogRow.Post.length; x++) {
-            let weather = res.data.Post[x].weather.split(" ")
-            
-            const data: BlogData = {
-              creator: res.data.Post[x].creator,
-              shorCreator: res.data.Post[x].creator.substring(0, 10) + '...' + res.data.Post[x].creator.slice(-4),
-              id: res.data.Post[x].id,
-              title: res.data.Post[x].title,
-              body: res.data.Post[x].body,
-              weather: weather[0],
-              createdAtDate: weather[1],
-              createdAtTime: weather[2],
-            }
+        const blogRow = res.data.Post
+        for(var index in blogRow){
+          let weather = blogRow[index].weather.split(" ")
 
-            blogData.value.push(data)
+          const data: BlogData = {
+            creator: blogRow[index].creator,
+            shorCreator: blogRow[index].creator.substring(0, 10) + '...' + blogRow[index].creator.slice(-4),
+            id: blogRow[index].id,
+            title: blogRow[index].title,
+            body: blogRow[index].body,
+            weather: weather[0],
+            createdAtDate: weather[1],
+            createdAtTime: weather[2],
           }
+
+          blogData.value.push(data)
         }
+
+        blogData.value.reverse()
       })
       .catch((error) => {
         throw new Error(error)
       })
     }
-    getAxios()
 
     let callApi = (): void => {
-      getAxios()
+      getBlogData()
     }
 
-    return { address, blogData, callApi }
-  },
-  methods:{
-    sendMsg(type, index){
-      if(type == 0){
-        this.$emit('sendmsg', 'createPost')
-      }else{
-        this.$emit('sendmsg', this.blogData[index])
+    let sendCreatePost = (): void => {
+      emit('sendMsgFromShowBlogList', 'createPost')
+    }
+
+    let sendShowBlog = (index: number): void => {
+      emit('sendMsgFromShowBlogList', blogData.value[index])
+    }
+
+    let reverse = (data: BlogData[]): Array<BlogData> => {
+      return data.reverse()
+    }
+
+    // computed
+    getBlogData()
+
+    // watch
+    watch(
+      () => refreshReq.value,
+      async () => {
+        getBlogData()
       }
-    },
+    )
+
+    return { address, blogData, callApi, sendCreatePost, sendShowBlog, reverse }
   },
 })
 </script>
@@ -349,6 +361,7 @@ $avatar-offset: 32 + 16;
     width: 100%;
   }
 }
+
 .show-more {
   display: flex;
   justify-content: center;
@@ -378,6 +391,25 @@ section {
   position: relative;
   padding-bottom: 132px;
 }
+
+.bottom-divider {
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+    height: 1px;
+    background-color: #d4d4d4;
+    text-align: center;
+    font-size: 16px;
+    color: rgba(101, 101, 101, 1);
+}
+.divider-btn {
+    position: absolute;
+    left: 50%;
+    background-color: #ffffff;
+    padding: 0 15px;
+    transform: translateX(-50%) translateY(-50%);
+}
+
 .loading {
   &__row {
     box-sizing: border-box;

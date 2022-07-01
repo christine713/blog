@@ -46,17 +46,6 @@
 
       <div style="width: 100%; height: 8px" />
 
-      <div
-        v-for="(x, i) in state.tx.amount"
-        :key="'amount' + i"
-        class="tx-feedback-subtitle amount"
-        :index="i"
-      >
-        {{ parseAmount(x.amount.amount) }} {{ x.amount.denom }}
-      </div>
-
-      <div style="width: 100%; height: 8px" />
-
       <div style="width: 100%">
         <SpButton style="width: 100%" @click="resetTx">Done</SpButton>
       </div>
@@ -157,9 +146,6 @@
         </div>
       </div>
 
-      
-
-      
       <div style="width: 100%; height: 54px" />
 
       <div>
@@ -177,9 +163,9 @@
 
 import { Bech32 } from '@cosmjs/encoding'
 import long from 'long'
-import { computed, defineComponent, PropType, reactive, watch } from 'vue'
+import { computed, defineComponent, reactive, watch } from 'vue'
 import { useStore } from 'vuex'
-import { SpAmountSelect,SpButton,SpClipboard} from '@starport/vue'
+import { SpButton, SpClipboard} from '@starport/vue'
 import { AssetForUI,Amount} from '@starport/vuex'
 import { useAddress, useAssets } from '@starport/vue/src/composables'
 
@@ -224,16 +210,14 @@ export let initialState: State = {
 }
 
 export default defineComponent({
-  name: 'SpTx',
+  name: 'CreateBlog',
 
   components: {
-    
-    SpAmountSelect,
     SpButton,
     SpClipboard
   },
 
-  setup() {
+  setup(_, {emit}) {
     // store
     let $s = useStore()
 
@@ -246,27 +230,24 @@ export default defineComponent({
 
     // actions
     let sendMsgSend = (opts: any) =>
-    //cosmos.bank.v1beta1/sendMsgSend
       $s.dispatch('cosmonaut.blog.blog/sendMsgCreatePost', opts)
-    let sendMsgTransfer = (opts: any) =>
-      $s.dispatch('ibc.applications.transfer.v1/sendMsgTransfer', opts)
 
     // methods
     let switchToSend = (): void => {
       state.currentUIState = UI_STATE.SEND
     }
-    let parseAmount = (amount: string): number => {
-      return amount == '' ? 0 : parseInt(amount)
+    let sendMsg = (): void => {
+      emit('sendMsgFromCreateBlog')
     }
     let resetTx = (): void => {
       state.tx.title = ''
       state.tx.body = ''
 
+      sendMsg()
       state.currentUIState = UI_STATE.SEND
     }
     let sendTx = async (): Promise<void> => {
       state.currentUIState = UI_STATE.TX_SIGNING
-
 
       let send
 
@@ -277,11 +258,10 @@ export default defineComponent({
       }
 
       try {
-        
-          send = () =>
-            sendMsgSend({
-              value: payload
-            })
+        send = () =>
+          sendMsgSend({
+            value: payload
+          })
         
         const txResult = await send()
 
@@ -295,7 +275,6 @@ export default defineComponent({
       }
     }
     
-
     // computed
     let showSend = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.SEND
@@ -303,11 +282,6 @@ export default defineComponent({
     let showWalletLocked = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.WALLET_LOCKED
     })
-    let hasAnyBalance = computed<boolean>(
-      () =>
-        balances.value.assets.length > 0 &&
-        balances.value.assets.some((x) => parseAmount(x.amount.amount) > 0)
-    )
     let isTxOngoing = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.TX_SIGNING
     })
@@ -317,21 +291,12 @@ export default defineComponent({
     let isTxError = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.TX_ERROR
     })
-    
 
     //watch
     watch(
       () => address.value,
       async () => {
         resetTx()
-      }
-    )
-    watch(
-      () => balances.value.assets,
-      async (newValue, oldValue) => {
-        if (newValue.length > 0 && oldValue.length === 0) {
-          bootstrapTxAmount()
-        }
       }
     )
 
@@ -344,13 +309,11 @@ export default defineComponent({
       showSend,
       showWalletLocked,
       balances,
-      hasAnyBalance,
       isTxOngoing,
       isTxSuccess,
       isTxError,
       // methods
       switchToSend,
-      parseAmount,
       resetTx,
       sendTx,
     }
