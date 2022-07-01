@@ -36,6 +36,7 @@ export default defineComponent({
   setup() {
   }
 })
+
 </script>
 
 <style lang="scss" scoped>
@@ -247,6 +248,18 @@ $avatar-offset: 32 + 16;
   font-feature-settings: 'zero';
   color: #000000;
   margin-top: 0;
+}
+
+.post {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 28px;
+  line-height: 127%;
+  /* identical to box height, or 36px */
+  letter-spacing: -0.016em;
+  font-feature-settings: 'zero';
+  color: rgb(2, 2, 2);
 }
 .input {
   &--search {

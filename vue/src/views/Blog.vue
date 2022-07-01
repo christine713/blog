@@ -4,6 +4,7 @@
       <div class="col-md-4">
         <ShowBlogList @sendMsgFromShowBlogList='getMsgFromShowBlogList' :refreshReq='refresh'/>
       </div>
+      
       <div class="col-md-8">
         <div v-if="isOpenCreateBlog==true">
           <CreateBlog  @sendMsgFromCreateBlog='getMsgFromCreateBlog'/>
@@ -65,4 +66,9 @@ export default {
   },
 
 }
+
+export interface State{
+  createPostOpen: boolean
+}
+
 </script>

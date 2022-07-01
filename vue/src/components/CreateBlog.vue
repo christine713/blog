@@ -116,13 +116,13 @@
       <div class="wallet-locked-wrapper">unlock your wallet</div>
     </div>
 
-      <div style="width: 100%; height: 32px" />
+    <div style="width: 100%; height: 32px" />
 
     <!-- send -->
     <div v-if="showSend">
       <div class="enter-text-wrapper">
-        <div class="input-label">Title</div>
-
+        <div class="input-label">Enter your blog title:</div>
+        <div style="width: 100%; height: 5px" />
         <div class="input-wrapper">
           <input
             v-model="state.tx.title"
@@ -133,9 +133,11 @@
         </div>
       </div>
 
-      <div class="enter-text-wrapper">
-        <div class="input-label">Body</div>
+      <div style="width: 100%; height: 15px" />
 
+      <div class="enter-text-wrapper">
+        <div class="input-label">Enter your blog body:</div>
+        <div style="width: 100%; height: 5px" />
         <div class="input-wrapper">
           <input
             v-model="state.tx.body"
@@ -160,13 +162,9 @@
 
 
 <script lang="ts">
-
-import { Bech32 } from '@cosmjs/encoding'
-import long from 'long'
 import { computed, defineComponent, reactive, watch } from 'vue'
 import { useStore } from 'vuex'
-import { SpButton, SpClipboard} from '@starport/vue'
-import { AssetForUI,Amount} from '@starport/vuex'
+import { SpButton,SpClipboard} from '@starport/vue'
 import { useAddress, useAssets } from '@starport/vue/src/composables'
 
 
@@ -250,6 +248,7 @@ export default defineComponent({
       state.currentUIState = UI_STATE.TX_SIGNING
 
       let send
+      
 
       let payload: any = {
         creator: address.value,
@@ -299,7 +298,6 @@ export default defineComponent({
         resetTx()
       }
     )
-
     return {
       //state,
       state,
@@ -338,20 +336,8 @@ export default defineComponent({
 
   color: #000000;
 
-  &--disabled {
-    color: rgba(0, 0, 0, 0.33);
-    &:hover {
-      cursor: default !important;
-    }
-  }
 }
 
-.advanced-label:hover {
-  cursor: pointer;
-}
-.copy {
-  padding: 12px 0;
-}
 .feedback {
   display: flex;
   flex-direction: column;
@@ -359,44 +345,6 @@ export default defineComponent({
 }
 .tx {
   padding-bottom: 40px;
-}
-.token-selector {
-  &--main {
-    &::v-deep(.add-token) {
-      margin-top: 18px;
-    }
-  }
-}
-
-.advanced {
-  &::v-deep(.add-token) {
-    margin-top: 17px;
-  }
-}
-
-.qrcode-wrapper {
-  background: rgba(0, 0, 0, 0.03);
-  padding: 36px;
-  text-align: center;
-}
-
-.address-wrapper {
-  padding: 16px;
-}
-
-.receive-wrapper .address {
-  font-family: Inter;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 16px;
-  /* or 24px */
-
-  display: flex;
-  align-items: center;
-
-  word-break: break-all;
-
-  color: #000000;
 }
 
 .tx-feedback-title {
@@ -463,21 +411,18 @@ export default defineComponent({
   color: #000000;
 }
 
-.title-wrapper {
-  display: flex;
-}
 
 .input-label {
   font-family: Inter;
   font-style: normal;
   font-weight: 400;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 153.8%;
   /* identical to box height, or 20px */
 
   /* light/muted */
 
-  color: rgba(0, 0, 0, 0.667);
+  color: rgba(0, 0, 0, 0.867);
 }
 
 .title {
