@@ -67,8 +67,4 @@ export default {
 
 }
 
-export interface State{
-  createPostOpen: boolean
-}
-
 </script>

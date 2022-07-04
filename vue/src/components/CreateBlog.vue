@@ -328,14 +328,11 @@ export default defineComponent({
   font-size: 13px;
   line-height: 153.8%;
   /* identical to box height, or 20px */
-
   display: inline-flex;
   align-items: center;
 
   /* base/black 0 */
-
   color: #000000;
-
 }
 
 .feedback {
@@ -354,16 +351,11 @@ export default defineComponent({
   font-size: 21px;
   line-height: 152%;
   /* identical to box height, or 32px */
-
   text-align: center;
   letter-spacing: -0.017em;
 
   /* light/text */
-
   color: #000000;
-}
-.tx-feedback-subtitle.amount {
-  text-transform: uppercase;
 }
 .tx-feedback-subtitle {
   font-family: Inter;
@@ -372,11 +364,9 @@ export default defineComponent({
   font-size: 16px;
   line-height: 150%;
   /* identical to box height, or 24px */
-
   text-align: center;
 
   /* light/muted */
-
   color: rgba(0, 0, 0, 0.667);
 }
 
@@ -387,11 +377,9 @@ export default defineComponent({
   font-size: 16px;
   line-height: 150%;
   /* identical to box height, or 24px */
-
   text-align: center;
 
   /* light/muted */
-
   color: rgba(0, 0, 0, 0.667);
 }
 
@@ -402,12 +390,10 @@ export default defineComponent({
   font-size: 21px;
   line-height: 152%;
   /* identical to box height, or 32px */
-
   text-align: center;
   letter-spacing: -0.017em;
 
   /* light/text */
-
   color: #000000;
 }
 
