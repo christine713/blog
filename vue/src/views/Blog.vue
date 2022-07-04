@@ -2,13 +2,12 @@
   <div class="container">
     <div class="row row-sm-revers">
       <div class="col-md-4">
-        <ShowBlogList @sendmsg='getMsg'/>
-        <div style="width: 100%; height: 8px" />
+        <ShowBlogList @sendMsgFromShowBlogList='getMsgFromShowBlogList' :refreshReq='refresh'/>
       </div>
       
       <div class="col-md-8">
-        <div v-if="info=='createPost'">
-          <CreateBlog />
+        <div v-if="isOpenCreateBlog==true">
+          <CreateBlog  @sendMsgFromCreateBlog='getMsgFromCreateBlog'/>
         </div>
         <div v-else>
           <ShowBlog :selectBlog='selectBlog'/>
@@ -19,7 +18,7 @@
 </template>
 
 <script lang='ts'>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import CreateBlog from '../components/CreateBlog.vue'
 import ShowBlog from '../components/ShowBlog.vue'
@@ -29,14 +28,6 @@ export default {
   name: 'Blog',
 
   components: { ShowBlog, ShowBlogList, CreateBlog },
-  
-  data() {
-    return {
-      data: 'hello',
-      info: '',
-      selectBlog: [],
-    }
-  },
 
   setup() {
     // store
@@ -44,27 +35,36 @@ export default {
 
     // computed
     let address = computed(() => $s.getters['common/wallet/address'])
+    
+    // data
+    const refresh = ref(0)
+    const selectBlog = ref([])
+    const isOpenCreateBlog = ref(false)
+
+    // method
+    let getMsgFromShowBlogList = (data): void => {
+      if(data == 'createPost'){
+        isOpenCreateBlog.value = true
+      }else{
+        isOpenCreateBlog.value = false
+        selectBlog.value = data
+      }
+    }
+
+    let getMsgFromCreateBlog = (): void => {
+      refresh.value += 1
+    }
 
     return {
-      address
+      address,
+      refresh, 
+      selectBlog, 
+      isOpenCreateBlog,
+      getMsgFromShowBlogList, 
+      getMsgFromCreateBlog
     }
   },
 
-  methods: {
-    getMsg(data){
-      if(data == 'createPost'){
-        this.info = "createPost"
-      }else{
-        this.info = "queryPost"
-        this.selectBlog = data
-      }
-    },
-  }
-
-}
-
-export interface State{
-  createPostOpen: boolean
 }
 
 </script>

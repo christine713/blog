@@ -148,10 +148,7 @@
         </div>
       </div>
 
-      
-
-      
-      <div style="width: 100%; height: 50px" />
+      <div style="width: 100%; height: 54px" />
 
       <div>
         <SpButton style="width: 100%"  @click="sendTx"
@@ -165,11 +162,9 @@
 
 
 <script lang="ts">
-
-
 import { computed, defineComponent, reactive, watch } from 'vue'
 import { useStore } from 'vuex'
-import { SpAmountSelect,SpButton,SpClipboard} from '@starport/vue'
+import { SpButton,SpClipboard} from '@starport/vue'
 import { useAddress, useAssets } from '@starport/vue/src/composables'
 
 
@@ -213,16 +208,14 @@ export let initialState: State = {
 }
 
 export default defineComponent({
-  name: 'SpTx',
+  name: 'CreateBlog',
 
   components: {
-    
-    SpAmountSelect,
     SpButton,
     SpClipboard
   },
 
-  setup() {
+  setup(_, {emit}) {
     // store
     let $s = useStore()
 
@@ -235,27 +228,24 @@ export default defineComponent({
 
     // actions
     let sendMsgSend = (opts: any) =>
-    //cosmos.bank.v1beta1/sendMsgSend
       $s.dispatch('cosmonaut.blog.blog/sendMsgCreatePost', opts)
-    let sendMsgTransfer = (opts: any) =>
-      $s.dispatch('ibc.applications.transfer.v1/sendMsgTransfer', opts)
 
     // methods
     let switchToSend = (): void => {
       state.currentUIState = UI_STATE.SEND
     }
-    let parseAmount = (amount: string): number => {
-      return amount == '' ? 0 : parseInt(amount)
+    let sendMsg = (): void => {
+      emit('sendMsgFromCreateBlog')
     }
     let resetTx = (): void => {
       state.tx.title = ''
       state.tx.body = ''
 
+      sendMsg()
       state.currentUIState = UI_STATE.SEND
     }
     let sendTx = async (): Promise<void> => {
       state.currentUIState = UI_STATE.TX_SIGNING
-
 
       let send
       
@@ -267,11 +257,10 @@ export default defineComponent({
       }
 
       try {
-        
-          send = () =>
-            sendMsgSend({
-              value: payload
-            })
+        send = () =>
+          sendMsgSend({
+            value: payload
+          })
         
         const txResult = await send()
 
@@ -285,7 +274,6 @@ export default defineComponent({
       }
     }
     
-
     // computed
     let showSend = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.SEND
@@ -293,11 +281,6 @@ export default defineComponent({
     let showWalletLocked = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.WALLET_LOCKED
     })
-    let hasAnyBalance = computed<boolean>(
-      () =>
-        balances.value.assets.length > 0 &&
-        balances.value.assets.some((x) => parseAmount(x.amount.amount) > 0)
-    )
     let isTxOngoing = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.TX_SIGNING
     })
@@ -307,7 +290,6 @@ export default defineComponent({
     let isTxError = computed<boolean>(() => {
       return state.currentUIState === UI_STATE.TX_ERROR
     })
-    
 
     //watch
     watch(
@@ -316,7 +298,6 @@ export default defineComponent({
         resetTx()
       }
     )
-    
     return {
       //state,
       state,
@@ -326,13 +307,11 @@ export default defineComponent({
       showSend,
       showWalletLocked,
       balances,
-      hasAnyBalance,
       isTxOngoing,
       isTxSuccess,
       isTxError,
       // methods
       switchToSend,
-      parseAmount,
       resetTx,
       sendTx,
     }
@@ -349,14 +328,11 @@ export default defineComponent({
   font-size: 13px;
   line-height: 153.8%;
   /* identical to box height, or 20px */
-
   display: inline-flex;
   align-items: center;
 
   /* base/black 0 */
-
   color: #000000;
-
 }
 
 .feedback {
@@ -375,16 +351,11 @@ export default defineComponent({
   font-size: 21px;
   line-height: 152%;
   /* identical to box height, or 32px */
-
   text-align: center;
   letter-spacing: -0.017em;
 
   /* light/text */
-
   color: #000000;
-}
-.tx-feedback-subtitle.amount {
-  text-transform: uppercase;
 }
 .tx-feedback-subtitle {
   font-family: Inter;
@@ -393,11 +364,9 @@ export default defineComponent({
   font-size: 16px;
   line-height: 150%;
   /* identical to box height, or 24px */
-
   text-align: center;
 
   /* light/muted */
-
   color: rgba(0, 0, 0, 0.667);
 }
 
@@ -408,11 +377,9 @@ export default defineComponent({
   font-size: 16px;
   line-height: 150%;
   /* identical to box height, or 24px */
-
   text-align: center;
 
   /* light/muted */
-
   color: rgba(0, 0, 0, 0.667);
 }
 
@@ -423,12 +390,10 @@ export default defineComponent({
   font-size: 21px;
   line-height: 152%;
   /* identical to box height, or 32px */
-
   text-align: center;
   letter-spacing: -0.017em;
 
   /* light/text */
-
   color: #000000;
 }
 
